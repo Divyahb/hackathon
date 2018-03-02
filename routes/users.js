@@ -25,24 +25,43 @@ router.post('/identity', function(req, res, next) {
 });
 
 /* GET users listing. */
-router.get('/identity', function(req, res, next) {
+router.get('/identity', function(req, resp, next) {
   var validUser = true;
-  var userResponse = {
-    'name': 'Jan',
-    'flyingBlueNumber': '232323'
-  }
   var userDetails = {
-    'name': userResponse.name,
-    'flyingBlueNumber': userResponse.flyingBlueNumber
-  }
-  var errorStatus = {
     'error': 'No matching user found'
+  };
+  var options = {
+    method: 'get',
+    url: 'http://jan.marketing:3001/blocks'
   }
-  if(validUser) {
-    res.send(userDetails);
-  }else {
-    res.send(error);
-  }
+  request(options, function (err, res, body) {
+    if (err) {
+      console.error('error posting json: ', err)
+      throw err
+    }
+    body = JSON.parse(body)
+    console.log('body: ', body)
+    
+    for(var i=0;i<body.length;i++){
+      console.log("entering")
+  
+      if(body[i].data && body[i].data.id === req.query.travellerId) {
+        console.log(body[i])
+        console.log(body[i].data)
+        console.log(body[i].data.id)
+        console.log(req.query.travellerId)
+        userDetails = {
+          'name': body[i].data.name,
+          'flyingBlueNumber': body[i].data.flyingBlueNumber
+        }
+        resp.send(userDetails);
+        break;
+      }
+      
+    }
+    
+  });
+
 });
 
 router.post('/register', function(req, resp, next) {
