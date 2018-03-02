@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var randomstring = require("randomstring");
 
 /* GET users listing. */
 router.post('/identity', function(req, res, next) {
@@ -44,8 +45,10 @@ router.get('/identity', function(req, res, next) {
   }
 });
 
-router.post('/register', function(req, res, next) {
+router.post('/register', function(req, resp, next) {
+  var uid = randomstring.generate(7);
   var userDetails = {"data": {
+    'id': uid,
     'name': req.body.name,
     'flyingBlueNumber': req.body.flyingBlueNumber
   }
@@ -66,7 +69,7 @@ router.post('/register', function(req, res, next) {
     console.log('headers: ', headers)
     console.log('statusCode: ', statusCode)
     console.log('body: ', body)
-    res.send({"id":body.index});
+    resp.json({"id":uid});
   })
   
 });
